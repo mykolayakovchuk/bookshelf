@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="formD">
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+{#{{app.request.get('status')}} Это ГЕТ параметр, который показывает успешность действия добавления в базу#}
+{% if app.request.get('status') == "success" %}
+    <p class ="dbMessage">Данные успешно внесены в базу данных</p>
+{% endif %}    
+    </div>
+    
+{% endblock %}

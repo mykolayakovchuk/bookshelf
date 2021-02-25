@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href="menu.css" rel="stylesheet">
+        <title>{% block title %}Bookshelf application{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+
+        {% block javascripts %}{% endblock %}
+    </head>
+    <body>
+    <div class="navbar">
+  <div class="dropdown">
+    <button class="dropbtn">Все книги
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="/allBook">Все книги</a>
+      <a href="/allBook">Все книги</a>
+      <a href="/allBook">Все книги</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <button class="dropbtn">Книга
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="/addBook">Добавить книгу</a>
+      <a href="/removeBook">Удалить книгу</a>
+      <a href="/editBook">Редактировать книгу</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <button class="dropbtn">Автор
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="/addAuthor">Добавить автора</a>
+      <a href="/removeAuthor">Удалить автора</a>
+      <a href="/editAuthor">Редактировать автора</a>
+    </div>
+  </div>
+</div>
+        {% block body %}{% endblock %}
+    </body>
+</html>
