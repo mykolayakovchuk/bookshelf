@@ -106,7 +106,7 @@ class DefaultController extends AbstractController
         // комментарии см. в форме добавления автора
         $book = $form->getData();
         $file = $form['bookcover']->getData(); // работа с файлом
-        $file->move('uploads/bookcover', $file->getClientOriginalName());
+        $file->move('uploads/bookcover', $file->getClientOriginalName());//!!!Тут нужно добавить алгоритм создания уникального имени
         //работа с базой
         $idAuthors=$book->getidAuthor();
         $entityManager = $this->getDoctrine()->getManager();
