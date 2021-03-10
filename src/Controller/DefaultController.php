@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\Idauthorbook;
+use App\Entity\mainview;
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -138,6 +139,16 @@ class DefaultController extends AbstractController
   */
   public function editBook(Request $request): Response
   {
+    $allBooks=$this->getDoctrine()
+    ->getRepository(mainview::class)
+    ->findAll();
+
+    var_dump($allBooks);
+    
+    
+    
+    
+    
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
     ->findAll();
@@ -188,9 +199,10 @@ class DefaultController extends AbstractController
         }
         return $this->redirectToRoute('editBook', ['status' => 'success']);
     }
-    return $this->render('editBookForm.html.twig', array(
-      'form' => $form->createView()
-    ));
+    //return $this->render('editBookForm.html.twig', array(
+    //  'form' => $form->createView()
+    //));
+
   }
  
 }
