@@ -6,6 +6,7 @@ namespace App\Entity\Form;
 class chooseEditBook
 {
     protected $nameBook;
+    protected $idBook;
 
     public function getnameBook()
     {
@@ -15,6 +16,16 @@ class chooseEditBook
     public function setnameBook($nameBook)
     {
         $this->nameBook = $nameBook;
+    }
+
+    public function getidBook()
+    {
+        return $this->idBook;
+    }
+
+    public function setidBook($idBook)
+    {
+        $this->idBook = $idBook;
     }
 }
 ?>

@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Entity\Form\addAuthor;
 use App\Entity\Form\addBook;
+use App\Entity\Form\chooseEditBook;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -143,11 +144,22 @@ class DefaultController extends AbstractController
     ->getRepository(mainview::class)
     ->findAll();
 
-    var_dump($allBooks);
+    //var_dump($allBooks);
+    $allBooksList=[];
+    foreach ($allBooks as $value){
+      $newelement= $value->getNamebook().", ".$value->getAuthors().", ".$value->getYear();
+      $allBooksList= $allBooksList+array( $newelement => $value->getIdbook());
+    }
+    ksort($allBooksList);// сортируем книги по алфавиту
     
-    
-    
-    
+    $chooseBook=new chooseEditBook;
+    $booklist=$this->createFormBuilder($chooseBook)
+    ->add('idBook', ChoiceType::class,  array('choices'  =>$allBooksList,
+           'label' => 'выбирайте книгу'))
+           ->add('save', SubmitType::class, array('label' => 'Редактировать'))
+           ->getForm();
+   
+         $booklist->handleRequest($request);
     
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
@@ -199,9 +211,10 @@ class DefaultController extends AbstractController
         }
         return $this->redirectToRoute('editBook', ['status' => 'success']);
     }
-    //return $this->render('editBookForm.html.twig', array(
-    //  'form' => $form->createView()
-    //));
+    return $this->render('editBookForm.html.twig', array(
+      'booklist' => $booklist->createView(),
+      'form' => $form->createView()
+    ));
 
   }
  

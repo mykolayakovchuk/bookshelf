@@ -2,6 +2,11 @@
 
 {% block body %}
     <div class="formD">
+{{ form_start(booklist) }}
+{{ form_widget(booklist) }}
+{{ form_end(booklist) }}    
+    </div>
+    <div class="formD">
 {{ form_start(form) }}
 {{ form_widget(form) }}
 {{ form_end(form) }}
