@@ -97,12 +97,10 @@ class DefaultController extends AbstractController
         ->add('year', DateType::class, array('label' => 'Год выпуска','widget' => 'single_text','format' => 'yyyy'))
         ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 'required' => false))
-        //->add('imagelink', TextType::class, array('label' => 'Загрузить обложку', 'required' => false))
         ->add('save', SubmitType::class, array('label' => 'Добавить'))
         ->getForm();
 
       $form->handleRequest($request);
-
 
       if ($form->isSubmitted() && $form->isValid()) {
         // комментарии см. в форме добавления автора
@@ -134,7 +132,6 @@ class DefaultController extends AbstractController
     ));
   }
 
-
   /**
   * @Route("/editBook", name="editBook")
   */
@@ -143,29 +140,25 @@ class DefaultController extends AbstractController
     $allBooks=$this->getDoctrine()
     ->getRepository(mainview::class)
     ->findAll();
-
-    //var_dump($allBooks);
     $allBooksList=[];
     foreach ($allBooks as $value){
       $newelement= $value->getNamebook().", ".$value->getAuthors().", ".$value->getYear();
       $allBooksList= $allBooksList+array( $newelement => $value->getIdbook());
     }
     ksort($allBooksList);// сортируем книги по алфавиту
-    
     $chooseBook=new chooseEditBook;
     $booklist=$this->createFormBuilder($chooseBook)
             ->add('idBook', ChoiceType::class,  array('choices'  =>$allBooksList,
-           'label' => 'выбирайте книгу'))
+           'label' => 'Выберите книгу для редактирования'))
            ->add('save', SubmitType::class, array('label' => 'Редактировать'))
            ->getForm();
    
          $booklist->handleRequest($request);
-    
 
       if ($booklist->isSubmitted()) {
         $book = $booklist->getData();
         $chosenId=$book->getidBook();
-        //тут нестандартный переход. Забираем значение и перенаправляем. Лучше эту операцию в будущем перенести на сторону клиента.
+        //(!!) тут нестандартный переход. Забираем значение и перенаправляем. Лучше эту операцию в будущем перенести на сторону клиента.
         return $this->redirectToRoute('editBook_Id', ["bookId"=>$chosenId]);
     }
     return $this->render('editBookFormChoose.html.twig', array(
@@ -179,28 +172,14 @@ class DefaultController extends AbstractController
   */
   public function editBookId(Request $request, $bookId): Response
   {
-    $allBooks=$this->getDoctrine()
+    $bookExemplar=$this->getDoctrine()
     ->getRepository(mainview::class)
-    ->findAll();
-
-    //var_dump($allBooks);
-    $allBooksList=[];
-    foreach ($allBooks as $value){
-      $newelement= $value->getNamebook().", ".$value->getAuthors().", ".$value->getYear();
-      $allBooksList= $allBooksList+array( $newelement => $value->getIdbook());
-    }
-    ksort($allBooksList);// сортируем книги по алфавиту
-    
-    $chooseBook=new chooseEditBook;
-    $booklist=$this->createFormBuilder($chooseBook)
-            ->setAction($this->generateUrl('target_route'))
-            ->setMethod('GET')
-            ->add('idBook', ChoiceType::class,  array('choices'  =>$allBooksList,
-           'label' => 'выбирайте книгу'))
-           ->add('save', SubmitType::class, array('label' => 'Редактировать'))
-           ->getForm();
+    ->find($bookId);
+    $bookExemplarAuthors=$this->getDoctrine()
+    ->getRepository(Idauthorbook::class)->findAll();
+    //->findBy(['idbook' => $bookId]);
    
-         $booklist->handleRequest($request);
+    //var_dump($bookExemplarAuthors);
     
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
@@ -221,7 +200,6 @@ class DefaultController extends AbstractController
         ->add('year', DateType::class, array('label' => 'Год выпуска','widget' => 'single_text','format' => 'yyyy'))
         ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 'required' => false))
-        //->add('imagelink', TextType::class, array('label' => 'Загрузить обложку', 'required' => false))
         ->add('save', SubmitType::class, array('label' => 'Добавить'))
         ->getForm();
 
