@@ -154,7 +154,48 @@ class DefaultController extends AbstractController
     
     $chooseBook=new chooseEditBook;
     $booklist=$this->createFormBuilder($chooseBook)
-    ->add('idBook', ChoiceType::class,  array('choices'  =>$allBooksList,
+            ->add('idBook', ChoiceType::class,  array('choices'  =>$allBooksList,
+           'label' => 'выбирайте книгу'))
+           ->add('save', SubmitType::class, array('label' => 'Редактировать'))
+           ->getForm();
+   
+         $booklist->handleRequest($request);
+    
+
+      if ($booklist->isSubmitted()) {
+        $book = $booklist->getData();
+        $chosenId=$book->getidBook();
+        //тут нестандартный переход. Забираем значение и перенаправляем. Лучше эту операцию в будущем перенести на сторону клиента.
+        return $this->redirectToRoute('editBook_Id', ["bookId"=>$chosenId]);
+    }
+    return $this->render('editBookFormChoose.html.twig', array(
+      'booklist' => $booklist->createView()
+    ));
+
+  }
+
+  /**
+  * @Route("/editBook/{bookId}", name="editBook_Id")
+  */
+  public function editBookId(Request $request, $bookId): Response
+  {
+    $allBooks=$this->getDoctrine()
+    ->getRepository(mainview::class)
+    ->findAll();
+
+    //var_dump($allBooks);
+    $allBooksList=[];
+    foreach ($allBooks as $value){
+      $newelement= $value->getNamebook().", ".$value->getAuthors().", ".$value->getYear();
+      $allBooksList= $allBooksList+array( $newelement => $value->getIdbook());
+    }
+    ksort($allBooksList);// сортируем книги по алфавиту
+    
+    $chooseBook=new chooseEditBook;
+    $booklist=$this->createFormBuilder($chooseBook)
+            ->setAction($this->generateUrl('target_route'))
+            ->setMethod('GET')
+            ->add('idBook', ChoiceType::class,  array('choices'  =>$allBooksList,
            'label' => 'выбирайте книгу'))
            ->add('save', SubmitType::class, array('label' => 'Редактировать'))
            ->getForm();
@@ -212,7 +253,6 @@ class DefaultController extends AbstractController
         return $this->redirectToRoute('editBook', ['status' => 'success']);
     }
     return $this->render('editBookForm.html.twig', array(
-      'booklist' => $booklist->createView(),
       'form' => $form->createView()
     ));
 
