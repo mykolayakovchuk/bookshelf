@@ -173,13 +173,13 @@ class DefaultController extends AbstractController
   public function editBookId(Request $request, $bookId): Response
   {
     $bookExemplar=$this->getDoctrine()
-    ->getRepository(mainview::class)
+    ->getRepository(Book::class)
     ->find($bookId);
     $bookExemplarAuthors=$this->getDoctrine()
     ->getRepository(Idauthorbook::class)->findAll();
     
    
-    var_dump($bookExemplarAuthors);
+    var_dump($bookExemplar);
     
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
