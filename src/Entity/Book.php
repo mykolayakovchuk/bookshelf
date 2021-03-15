@@ -30,9 +30,9 @@ class Book
     private $namebook;
 
     /**
-     * @var int
+     * @var \DateTime
      *
-     * @ORM\Column(name="year", type="integer", nullable=false)
+     * @ORM\Column(name="year", type="date", nullable=false)
      */
     private $year;
 
@@ -67,7 +67,7 @@ class Book
         return $this;
     }
 
-    public function getYear(): ?int
+    public function getYear(): ?\DateTimeInterface
     {
         return $this->year;
     }

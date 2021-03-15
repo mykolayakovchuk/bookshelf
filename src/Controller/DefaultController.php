@@ -180,10 +180,16 @@ class DefaultController extends AbstractController
     ->getRepository(Book::class)
     ->find($bookId);
     $bookExemplarAuthors=$this->getDoctrine()
-    ->getRepository(Idauthorbook::class)->findAll();
-    
-   
-    var_dump($bookExemplar);
+    ->getRepository(Idauthorbook::class)
+    ->findBy( ['idbook' => $bookId]);  // возвращает массив объектов idauthorbook (см ниже:)
+    //$bookExemplarAuthors[0]->getIdauthor()->getIdauthor());
+    //объектов idauthorbook -- > возвращает объект автор -- > возвращает ИД для предыдущего объекта АВТОР
+    $bookExemplarAuthorsIds=[];
+    foreach($bookExemplarAuthors as $id){
+      $bookExemplarAuthorsIds[]=$id->getIdauthor()->getIdauthor();
+    }
+    var_dump($bookExemplarAuthorsIds);
+    var_dump($bookExemplar->getYear());
     
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
@@ -199,10 +205,13 @@ class DefaultController extends AbstractController
       $form = $this->createFormBuilder($book)
         ->add('idAuthor', ChoiceType::class,  array('choices'  =>$allAuthorsForFormBuilding,
           'multiple' => 'true', //can choose few authors. array is returned
-          'label' => 'Имя Автора (можно выбрать нескольких авторов (нажмите и удерживайте кнопку ctrl))'))
-        ->add('nameBook', TextType::class, array('label' => 'Название книги'))
-        ->add('year', DateType::class, array('label' => 'Год выпуска','widget' => 'single_text','format' => 'yyyy'))
-        ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false))
+          'label' => 'Имя Автора (можно выбрать нескольких авторов (нажмите и удерживайте кнопку ctrl))',
+          'data'=>$bookExemplarAuthorsIds))
+        ->add('nameBook', TextType::class, array('label' => 'Название книги', 'data' => $bookExemplar->getNamebook()))
+        ->add('year', DateType::class, array('label' => 'Год выпуска','widget' => 'single_text',
+        'format' => 'yyyy'))//,'data' => $bookExemplar->getYear()
+        ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false,
+        'data' => $bookExemplar->getComment()))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 'required' => false))
         ->add('save', SubmitType::class, array('label' => 'Добавить'))
         ->getForm();
@@ -229,8 +238,8 @@ class DefaultController extends AbstractController
           $idauthorbookNew->setIdbook($bookNew);
           $author = $this->getDoctrine()->getRepository(Author::class)->find($value);
           $idauthorbookNew->setIdauthor($author);
-          $entityManager->persist($idauthorbookNew);
-          $entityManager->flush();
+          //$entityManager->persist($idauthorbookNew);
+          //$entityManager->flush();
         }
         return $this->redirectToRoute('editBook', ['status' => 'success']);
     }
