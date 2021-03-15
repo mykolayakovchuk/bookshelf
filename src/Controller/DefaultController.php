@@ -106,7 +106,9 @@ class DefaultController extends AbstractController
         // комментарии см. в форме добавления автора
         $book = $form->getData();
         $file = $form['bookcover']->getData(); // работа с файлом
-        $file->move('uploads/bookcover', $file->getClientOriginalName());//!!!Тут нужно добавить алгоритм создания уникального имени
+        if ($file != NULL){
+          $file->move('uploads/bookcover', $file->getClientOriginalName());//!!!Тут нужно добавить алгоритм создания уникального имени
+        }
         //работа с базой
         $idAuthors=$book->getidAuthor();
         $entityManager = $this->getDoctrine()->getManager();
@@ -114,7 +116,9 @@ class DefaultController extends AbstractController
         $bookNew->setNamebook($book->getnameBook());
         $bookNew->setYear($book->getyear());
         $bookNew->setComment($book->getComment());
-        $bookNew->setimagelink($file->getClientOriginalName());
+        if ($file != NULL){
+          $bookNew->setimagelink($file->getClientOriginalName());
+        }
         $entityManager->persist($bookNew);
         $entityManager->flush();
         foreach ($idAuthors as $value) {
