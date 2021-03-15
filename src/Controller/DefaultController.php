@@ -177,9 +177,9 @@ class DefaultController extends AbstractController
     ->find($bookId);
     $bookExemplarAuthors=$this->getDoctrine()
     ->getRepository(Idauthorbook::class)->findAll();
-    //->findBy(['idbook' => $bookId]);
+    
    
-    //var_dump($bookExemplarAuthors);
+    var_dump($bookExemplarAuthors);
     
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
