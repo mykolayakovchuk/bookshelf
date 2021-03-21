@@ -10,9 +10,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
+//use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Entity\Author;
@@ -94,7 +95,7 @@ class DefaultController extends AbstractController
           'multiple' => 'true', //can choose few authors. array is returned
           'label' => 'Имя Автора (можно выбрать нескольких авторов (нажмите и удерживайте кнопку ctrl))'))
         ->add('nameBook', TextType::class, array('label' => 'Название книги'))
-        ->add('year', DateType::class, array('label' => 'Год выпуска','widget' => 'single_text','format' => 'yyyy'))
+        ->add('year', NumberType::class, array('label' => 'Год выпуска', 'scale'=>0))
         ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 'required' => false))
         ->add('save', SubmitType::class, array('label' => 'Добавить'))
@@ -189,7 +190,7 @@ class DefaultController extends AbstractController
       $bookExemplarAuthorsIds[]=$id->getIdauthor()->getIdauthor();
     }
     var_dump($bookExemplarAuthorsIds);
-    var_dump($bookExemplar->getYear());
+    //var_dump($bookExemplar->getYear());
     
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
@@ -208,8 +209,7 @@ class DefaultController extends AbstractController
           'label' => 'Имя Автора (можно выбрать нескольких авторов (нажмите и удерживайте кнопку ctrl))',
           'data'=>$bookExemplarAuthorsIds))
         ->add('nameBook', TextType::class, array('label' => 'Название книги', 'data' => $bookExemplar->getNamebook()))
-        ->add('year', DateType::class, array('label' => 'Год выпуска','widget' => 'single_text',
-        'format' => 'yyyy'))//,'data' => $bookExemplar->getYear()
+        ->add('year', NumberType::class, array('label' => 'Год выпуска','scale'=>0))//,'data' => $bookExemplar->getYear()
         ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false,
         'data' => $bookExemplar->getComment()))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 'required' => false))
