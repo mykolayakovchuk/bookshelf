@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 //use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;//
 use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\Idauthorbook;
@@ -189,8 +190,6 @@ class DefaultController extends AbstractController
     foreach($bookExemplarAuthors as $id){
       $bookExemplarAuthorsIds[]=$id->getIdauthor()->getIdauthor();
     }
-    var_dump($bookExemplarAuthorsIds);
-    //var_dump($bookExemplar->getYear());
     
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
@@ -202,20 +201,36 @@ class DefaultController extends AbstractController
     ksort($allAuthorsForFormBuilding);// сортируем авторов по алфавиту
     
     $book = new addBook();
-            
+
+    if ($bookExemplar->getImagelink() == NULL){
       $form = $this->createFormBuilder($book)
         ->add('idAuthor', ChoiceType::class,  array('choices'  =>$allAuthorsForFormBuilding,
           'multiple' => 'true', //can choose few authors. array is returned
           'label' => 'Имя Автора (можно выбрать нескольких авторов (нажмите и удерживайте кнопку ctrl))',
           'data'=>$bookExemplarAuthorsIds))
         ->add('nameBook', TextType::class, array('label' => 'Название книги', 'data' => $bookExemplar->getNamebook()))
-        ->add('year', NumberType::class, array('label' => 'Год выпуска','scale'=>0))//,'data' => $bookExemplar->getYear()
+        ->add('year', NumberType::class, array('label' => 'Год выпуска','scale'=>0,'data' => $bookExemplar->getYear()))
         ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false,
         'data' => $bookExemplar->getComment()))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 'required' => false))
+        //если у книги нет обложки то поле пустое
         ->add('save', SubmitType::class, array('label' => 'Добавить'))
         ->getForm();
-
+    }else{
+      $form = $this->createFormBuilder($book)
+        ->add('idAuthor', ChoiceType::class,  array('choices'  =>$allAuthorsForFormBuilding,
+          'multiple' => 'true', //can choose few authors. array is returned
+          'label' => 'Имя Автора (можно выбрать нескольких авторов (нажмите и удерживайте кнопку ctrl))',
+          'data'=>$bookExemplarAuthorsIds))
+        ->add('nameBook', TextType::class, array('label' => 'Название книги', 'data' => $bookExemplar->getNamebook()))
+        ->add('year', NumberType::class, array('label' => 'Год выпуска','scale'=>0,'data' => $bookExemplar->getYear()))
+        ->add('Comment', TextareaType::class, array('label' => 'Комментарий (необязательно)', 'required' => false,
+        'data' => $bookExemplar->getComment()))
+        ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 
+        'data' => new File($this->getParameter('bookcovers_directory')."/".$bookExemplar->getImagelink()), 'required' => false))
+        ->add('save', SubmitType::class, array('label' => 'Добавить'))
+        ->getForm();
+    }
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
