@@ -139,6 +139,43 @@ class DefaultController extends AbstractController
   }
 
   /**
+  * @Route("/removeBook", name="removeBook")
+  */
+  public function removeBook(Request $request): Response
+  {
+    $allBooks=$this->getDoctrine()
+    ->getRepository(mainview::class)
+    ->findAll();
+    $allBooksList=[];
+    foreach ($allBooks as $value){
+      $newelement= $value->getNamebook().", ".$value->getAuthors().", ".$value->getYear();
+      $allBooksList= $allBooksList+array( $newelement => $value->getIdbook());
+    }
+    ksort($allBooksList);// сортируем книги по алфавиту
+    $chooseBook=new chooseEditBook;
+    $booklist=$this->createFormBuilder($chooseBook)
+            ->add('idBook', ChoiceType::class,  array('choices'  =>$allBooksList,
+           'label' => 'Выберите книгу, которую необходимо удалить'))
+           ->add('save', SubmitType::class, array('label' => 'Удалить'))
+           ->getForm();
+   
+         $booklist->handleRequest($request);
+
+      if ($booklist->isSubmitted()) {
+        $book = $booklist->getData();
+        $chosenId=$book->getidBook();
+        $entityManager = $this->getDoctrine()->getManager();
+        $book = $entityManager->getRepository(Book::class)->find($chosenId);
+        $entityManager->remove($book);
+        $entityManager->flush();
+        return $this->redirectToRoute('removeBook', ['status' => 'success']);
+    }
+    return $this->render('editBookFormChoose.html.twig', array(
+      'booklist' => $booklist->createView()
+    ));
+  }
+
+  /**
   * @Route("/editBook", name="editBook")
   */
   public function editBook(Request $request): Response
