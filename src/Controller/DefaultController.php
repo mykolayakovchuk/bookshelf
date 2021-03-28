@@ -170,7 +170,6 @@ class DefaultController extends AbstractController
     return $this->render('editBookFormChoose.html.twig', array(
       'booklist' => $booklist->createView()
     ));
-
   }
 
   /**
@@ -178,6 +177,7 @@ class DefaultController extends AbstractController
   */
   public function editBookId(Request $request, $bookId): Response
   {
+    $entityManager = $this->getDoctrine()->getManager();
     $bookExemplar=$this->getDoctrine()
     ->getRepository(Book::class)
     ->find($bookId);
@@ -190,7 +190,7 @@ class DefaultController extends AbstractController
     foreach($bookExemplarAuthors as $id){
       $bookExemplarAuthorsIds[]=$id->getIdauthor()->getIdauthor();
     }
-    
+
     $allAuthors = $this->getDoctrine()
     ->getRepository(author::class)
     ->findAll();
@@ -214,7 +214,7 @@ class DefaultController extends AbstractController
         'data' => $bookExemplar->getComment()))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 'required' => false))
         //если у книги нет обложки то поле пустое
-        ->add('save', SubmitType::class, array('label' => 'Добавить'))
+        ->add('save', SubmitType::class, array('label' => 'Редактировать'))
         ->getForm();
     }else{
       $form = $this->createFormBuilder($book)
@@ -228,38 +228,50 @@ class DefaultController extends AbstractController
         'data' => $bookExemplar->getComment()))
         ->add('bookcover', FileType::class, array('label' => 'Загрузить обложку книги', 
         'data' => new File($this->getParameter('bookcovers_directory')."/".$bookExemplar->getImagelink()), 'required' => false))
-        ->add('save', SubmitType::class, array('label' => 'Добавить'))
+        ->add('save', SubmitType::class, array('label' => 'Редактировать'))
         ->getForm();
     }
       $form->handleRequest($request);
-
+            
       if ($form->isSubmitted() && $form->isValid()) {
         // комментарии см. в форме добавления автора
         $book = $form->getData();
         $file = $form['bookcover']->getData(); // работа с файлом
-        $file->move('uploads/bookcover', $file->getClientOriginalName());
+        if ($file != NULL){
+          $file->move('uploads/bookcover', $file->getClientOriginalName());
+        }
         //работа с базой
         $idAuthors=$book->getidAuthor();
-        $entityManager = $this->getDoctrine()->getManager();
-        $bookNew = new Book();
-        $bookNew->setNamebook($book->getnameBook());
-        $bookNew->setYear($book->getyear());
-        $bookNew->setComment($book->getComment());
-        $bookNew->setimagelink($file->getClientOriginalName());
-        $entityManager->persist($bookNew);
-        $entityManager->flush();
-        foreach ($idAuthors as $value) {
-          $idauthorbookNew= new Idauthorbook();
-          $idauthorbookNew->setIdbook($bookNew);
-          $author = $this->getDoctrine()->getRepository(Author::class)->find($value);
-          $idauthorbookNew->setIdauthor($author);
-          //$entityManager->persist($idauthorbookNew);
-          //$entityManager->flush();
+        $bookExemplar->setNamebook($book->getnameBook());
+        $bookExemplar->setYear($book->getyear());
+        $bookExemplar->setComment($book->getComment());
+        if ($file != NULL){
+          $bookExemplar->setimagelink($file->getClientOriginalName());
+        }
+        $entityManager->flush();//вносим изменения в сущности
+        if($idAuthors != $bookExemplarAuthorsIds){ //если произошли изменения в авторах
+          foreach (array_diff($bookExemplarAuthorsIds, $idAuthors) as $value){ // удаляем авторов
+            //находим ид авторов которые пользователь удалил из первоначальной формы
+            $entityManager = $this->getDoctrine()->getManager();
+            $idauthorbookRow=$this->getDoctrine()->getRepository(Idauthorbook::class)
+            ->findOneBy( ['idbook' => $bookId, 'idauthor' => $value]);
+            $entityManager->remove($idauthorbookRow);
+            $entityManager->flush();
+          }
+          foreach (array_diff($idAuthors, $bookExemplarAuthorsIds) as $value) {  // добавляем новых авторов
+            //находим ид авторов которые пользователь добавил в первоначальную форму 
+            $idauthorbookNew= new Idauthorbook();
+            $idauthorbookNew->setIdbook($bookExemplar);
+            $author = $this->getDoctrine()->getRepository(Author::class)->find($value);
+            $idauthorbookNew->setIdauthor($author);
+            $entityManager->persist($idauthorbookNew);
+            $entityManager->flush();
+          }
         }
         return $this->redirectToRoute('editBook', ['status' => 'success']);
     }
     return $this->render('editBookForm.html.twig', array(
-      'form' => $form->createView()
+      'form' => $form->createView(), 'bookExemplar'=>$bookExemplar
     ));
 
   }
