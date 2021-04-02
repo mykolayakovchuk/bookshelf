@@ -28,7 +28,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class DefaultController extends AbstractController
 {
 /**
-* @Route("/")
+* @Route("/", name="mainPage")
 */
   public function index()
   {
@@ -74,7 +74,42 @@ class DefaultController extends AbstractController
           'form' => $form->createView(),
       ));
   }
-///начало вставки
+
+/**
+* @Route("/removeAuthor", name="removeAuthor")
+*/
+public function removeAuthor(Request $request): Response
+{
+  $allAuthors=$this->getDoctrine()
+  ->getRepository(Author::class)
+  ->findAll();
+  $allAuthorsList=[];
+  foreach ($allAuthors as $value){
+    $newelement= $value->getSurnameauthor()." ".$value->getNameauthor();
+    $allAuthorsList= $allAuthorsList+array( $newelement => $value->getIdauthor());
+  }
+  ksort($allAuthorsList);// сортируем авторов по алфавиту
+  $chooseAuthor=new chooseEditBook;// используе тот же шаблон формы, что и для книги. Поэтому в названии переменной Book а не Author
+  $authorlist=$this->createFormBuilder($chooseAuthor)
+          ->add('idBook', ChoiceType::class,  array('choices'  =>$allAuthorsList,
+          'label' => 'Выберите автора для удаления '))
+          ->add('save', SubmitType::class, array('label' => 'Удалить'))
+          ->getForm();
+  $authorlist->handleRequest($request);
+  if ($authorlist->isSubmitted()) {
+    $author = $authorlist->getData();
+    $chosenId=$author->getidBook();
+    $entityManager = $this->getDoctrine()->getManager();
+    $authorForRemoving = $entityManager->getRepository(Author::class)->find($chosenId);
+    $entityManager->remove($authorForRemoving);
+    $entityManager->flush();
+    return $this->redirectToRoute('removeAuthor', ['status' => 'success']);  
+  }
+  return $this->render('editBookFormChoose.html.twig', array(
+    'booklist' => $authorlist->createView() //booklist следует читать как authorlist (см. коммент выше)
+  ));
+}
+
 /**
 * @Route("/editAuthor", name="editAuthor")
 */
@@ -88,9 +123,9 @@ public function editAuthor(Request $request): Response
     $newelement= $value->getSurnameauthor()." ".$value->getNameauthor();
     $allAuthorsList= $allAuthorsList+array( $newelement => $value->getIdauthor());
   }
-  ksort($allAuthorsList);// сортируем книги по алфавиту
-  $chooseBook=new chooseEditBook;
-  $authorlist=$this->createFormBuilder($chooseBook)
+  ksort($allAuthorsList);// сортируем авторов по алфавиту
+  $chooseAuthor=new chooseEditBook;// используе тот же шаблон формы, что и для книги. Поэтому в названии переменной Book а не Author
+  $authorlist=$this->createFormBuilder($chooseAuthor)
           ->add('idBook', ChoiceType::class,  array('choices'  =>$allAuthorsList,
           'label' => 'Выберите автора для редактирования'))
           ->add('save', SubmitType::class, array('label' => 'Редактировать'))
@@ -131,8 +166,6 @@ public function editAuthorId(Request $request, $authorId): Response
 
   if ($form->isSubmitted() && $form->isValid()) {
       $author = $form->getData();
-      //$entityManager = $this->getDoctrine()->getManager();
-      //$authorNew = new Author();
       $Author->setNameauthor($author->getnameAuthor());
       $Author->setSurnameauthor($author->getsurnameAuthor());
       $Author->setComment($author->getComment());
@@ -144,7 +177,6 @@ public function editAuthorId(Request $request, $authorId): Response
   ));
 }
 
-///конец вставки
 /**
 * @Route("/addBook", name="addBook")
 */
