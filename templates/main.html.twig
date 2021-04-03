@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link href="/mainview.css" rel="stylesheet" />
+{% endblock %}
+{% block body %}
+<main>
+{% for book in allBooks %}
+<div class="column">
+    <div class="card">
+      <img src="/uploads/bookcover/{{book.getImagelink}}" alt="{{ book.getNamebook }}" class="bookcover" >
+      <div class="container">
+        <h2>{{ book.getNamebook }}</h2>
+        <p class="title">{{ book.getAuthors }}</p>
+        <p>{{ book.getComment }}</p>
+        <p>{{ book.getYear }}</p>
+        <p><button class="button">Подробнее...</button></p>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</main>
+{% endblock %}
+

@@ -28,13 +28,26 @@ use Doctrine\ORM\EntityManagerInterface;
 class DefaultController extends AbstractController
 {
 /**
-* @Route("/", name="mainPage")
+* @Route("/")
 */
   public function index()
   {
-      //return new Response('Hello!');
-      return $this->render('base.html.twig');
+      
+    return $this->redirectToRoute('mainPage');
   }
+
+/**
+* @Route("/main", name="mainPage")
+*/
+public function main()
+{
+  $allBooks=$this->getDoctrine()
+  ->getRepository(mainview::class)
+  ->findAll();
+    
+    //return new Response('Hello!');
+    return $this->render('main.html.twig', array('allBooks'=>$allBooks ));
+}
 
 /**
 * @Route("/addAuthor", name="addAuthor")

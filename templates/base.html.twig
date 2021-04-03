@@ -2,9 +2,11 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <link href="/menu.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>{% block title %}Bookshelf application{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+        <link href="/menu.css" rel="stylesheet">
+        {% endblock %}
 
         {% block javascripts %}{% endblock %}
     </head>
@@ -15,9 +17,9 @@
       <i class="fa fa-caret-down"></i>
     </button>
     <div class="dropdown-content">
-      <a href="/allBook">Все книги</a>
-      <a href="/allBook">Все книги</a>
-      <a href="/allBook">Все книги</a>
+      <a href="/main">Все книги</a>
+      <a href="/search">Поиск...</a>
+      <a href="/about">О приложении</a>
     </div>
   </div>
   <div class="dropdown">
