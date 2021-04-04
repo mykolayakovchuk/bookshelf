@@ -1,4 +1,5 @@
 main{
+    font-family: Verdana,sans-serif;
     width: 80%;
     margin-top: 30px;
     margin-left: auto;   /* HERE I USE 5% TOO (for half-sandbox-window  */
@@ -11,7 +12,9 @@ main{
     width: 25%;
     margin-bottom: 16px;
     padding: 0 8px;
-  }
+    display: flex;
+    flex-wrap: wrap;
+   }
   
   /* Display the columns below each other instead of side by side on small screens */
   @media screen and (max-width: 650px) {

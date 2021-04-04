@@ -1,4 +1,32 @@
 {% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
 
+    <link href="/mainview.css" rel="stylesheet" />
+{% endblock %}
+{% block body %}
+{#
+<main>
+{% for book in searchResult %}
+<div class="column">
+    <div class="card">
+{% if book.getImagelink %}
+      <img src="/uploads/bookcover/{{book.getImagelink}}" alt="{{ book.getNamebook }}" class="bookcover" >
+{% else %}
+      <img src="/uploads/bookcover/undefined_bookcover.png" alt="{{ book.getNamebook }}" class="bookcover" >
+{% endif %}
+      <div class="container">
+        <h2>{{ book.getNamebook }}</h2>
+        <p class="title">{{ book.getAuthors }}</p>
+        <p>{{ book.getComment }}</p>
+        <p>{{ book.getYear }}</p>
+        <p><button class="button">Подробнее...</button></p>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</main>
+#}
+{% endblock %}
     
 {% endblock %}

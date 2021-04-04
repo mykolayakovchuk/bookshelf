@@ -50,6 +50,16 @@ public function main()
 }
 
 /**
+* @Route("/search", name="search")
+*/
+public function search()
+{
+  
+  return $this->render('search.html.twig');
+  //  return $this->render('search.html.twig', array('allBooks'=>$allBooks ));
+}
+
+/**
 * @Route("/addAuthor", name="addAuthor")
 */
   public function addAuthor(Request $request)
