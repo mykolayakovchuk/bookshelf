@@ -5,6 +5,9 @@
     <link href="/mainview.css" rel="stylesheet" />
 {% endblock %}
 {% block body %}
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
 {#
 <main>
 {% for book in searchResult %}
@@ -26,7 +29,7 @@
   </div>
 {% endfor %}
 </main>
-#}
+
 {% endblock %}
-    
+   #} 
 {% endblock %}

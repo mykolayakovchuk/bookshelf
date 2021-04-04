@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Entity\Form\addAuthor;
 use App\Entity\Form\addBook;
 use App\Entity\Form\chooseEditBook;
+use App\Entity\Form\SearchBar;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,10 +53,25 @@ public function main()
 /**
 * @Route("/search", name="search")
 */
-public function search()
+public function search(Request $request)
 {
-  
-  return $this->render('search.html.twig');
+  $searchString = new SearchBar();
+  $form = $this->createFormBuilder($searchString)
+      ->add('searchString', TextType::class, array('label' => false))
+      ->add('save', SubmitType::class, array('label' => 'ПОИСК'))
+      ->getForm();
+  $form->handleRequest($request);
+  if ($form->isSubmitted() && $form->isValid()) {
+    $searchString = $form->getData();
+    return $this->redirectToRoute('search', ['search' => $searchString->getsearchString()]);
+  }
+  if ($request->query->get('search') != NULL){
+    var_dump($request->query->get('search')); 
+  }
+
+  return $this->render('search.html.twig', array(
+    'form' => $form->createView(),
+));
   //  return $this->render('search.html.twig', array('allBooks'=>$allBooks ));
 }
 
