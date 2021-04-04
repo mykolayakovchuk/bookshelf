@@ -9,11 +9,13 @@ main{
 /* Three columns side by side */
 .column {
     float: left;
-    width: 25%;
+    width: 30%;
     margin-bottom: 16px;
     padding: 0 8px;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
    }
   
   /* Display the columns below each other instead of side by side on small screens */
@@ -26,9 +28,10 @@ main{
   
   /* Add some shadows to create a card effect */
   .card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    height: 650px;
-  }
+     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+     align-self: auto;
+     min-height: 700px;
+    }
   
   /* Some left and right padding inside the container */
   .container {
