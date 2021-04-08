@@ -66,7 +66,23 @@ public function search(Request $request)
     return $this->redirectToRoute('search', ['search' => $searchString->getsearchString()]);
   }
   if ($request->query->get('search') != NULL){
-    var_dump($request->query->get('search')); 
+    var_dump($request->query->get('search'));
+    $searchInput= $request->query->get('search');
+    $searchArray=explode(" ", $searchInput);
+    $columns=["namebook","Authors", "year", "comment"];
+    $searchResult=[];
+    var_dump($searchArray);
+    foreach ($searchArray as $searchWord){
+      foreach ($columns as $col){
+        //$result=$this->getDoctrine()
+        //->getRepository(mainview::class)
+       //->findBy([$col=>$searchWord]);
+        
+      }
+    }
+    return $this->render('search.html.twig', array(
+      'form' => $form->createView(), 'searchResult'=> $searchResult
+  ));  
   }
 
   return $this->render('search.html.twig', array(
@@ -95,7 +111,6 @@ public function search(Request $request)
           // $form->getData() holds the submitted values (Забираем введённые юзером данные)
           // но первоначальная переменная `$task` тоже была обновлена
           $author = $form->getData();
-  
           // ... . выполните действия, такие как сохранение задачи в базе данных
           // например, если Task является сущностью Doctrine, сохраните его!
           $entityManager = $this->getDoctrine()->getManager();

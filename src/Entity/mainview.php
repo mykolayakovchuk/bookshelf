@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * mainview
  *
  * @ORM\Table(name="mainview")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\mainviewRepository")
  */
 class mainview
 {
@@ -86,6 +86,5 @@ class mainview
     {
         return $this->Authors;
     }
-
 
 }
